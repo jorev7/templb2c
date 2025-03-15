@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('https://login.microsoftonline.com/static/tenant/default/img/default_signin_illustration_optimized.png') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        p {
+            color: black;
+            font-size: 14px;
+            text-align: left;
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #0078d4;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #005a9e;
+        }
+        .hidden {
+            display: none;
+        }
+        .agil {
+            color: gray;
+        }
+        .smart {
+            color: red;
+        }
+        .verification-message {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="step1">
+        <h2><span class="agil">Agil</span><span class="smart">Smart</span> NM<span style="color:gray;">Viajes</span></h2>
+        <p>Ingresa tu correo y haz clic en el botón Enviar.</p>
+        <form onsubmit="event.preventDefault(); showVerification();">
+            <input type="email" id="userEmail" name="email" placeholder="Correo Electrónico" required>
+            <button type="submit">Enviar código de verificación</button>
+        </form>
+    </div>
+    
+    <div class="login-container hidden" id="step2">
+        <h2><span class="agil">Agil</span><span class="smart">Smart</span> NM<span style="color:gray;">Viajes</span></h2>
+        <p>El código de verificación se ha enviado a tu bandeja de entrada. Cópiarlo en el campo de abajo.</p>
+        <input type="email" id="displayEmail" disabled>
+        <input type="text" id="verificationCode" name="code" placeholder="Código de verificación" required maxlength="6" pattern="\d{6}" title="Ingrese exactamente 6 dígitos numéricos" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)">
+        <button onclick="showConfirmation()">Verificar código</button>
+        <button>Enviar nuevo código</button>
+    </div>
+
+    <div class="login-container hidden" id="step3">
+        <h2><span class="agil">Agil</span><span class="smart">Smart</span> NM<span style="color:gray;">Viajes</span></h2>
+        <h2 class="verification-message">Dirección de correo electrónico verificada. Puede continuar.</h2>
+        <input type="email" id="verifiedEmail" disabled>
+        <button>Continuar</button>
+    </div>
+    
+    <script>
+        function showVerification() {
+            let email = document.getElementById('userEmail').value;
+            document.getElementById('displayEmail').value = email;
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function showConfirmation() {
+            let code = document.getElementById('verificationCode').value;
+            if (code.length !== 6) {
+                alert("El código de verificación debe tener exactamente 6 dígitos.");
+                return;
+            }
+            let email = document.getElementById('displayEmail').value;
+            document.getElementById('verifiedEmail').value = email;
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
