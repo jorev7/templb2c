@@ -95,14 +95,14 @@
     
     <script>
         function showVerification() {
-            let email = document.getElementById('userEmail').value;
+            let email = document.getElementById('email').value;
             document.getElementById('displayEmail').value = email;
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.remove('hidden');
         }
 
         function showConfirmation() {
-            let code = document.getElementById('verificationCode').value;
+            let code = document.getElementById('email_ver_input').value;
             if (code.length !== 6) {
                 alert("El código de verificación debe tener exactamente 6 dígitos.");
                 return;
@@ -115,4 +115,3 @@
     </script>
 </body>
 </html>
-
