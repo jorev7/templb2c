@@ -1,138 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inicio de Sesión - Azure AD B2C</title>
+  <meta charset="UTF-8" />
+  <title>Inicio de Sesión B2C</title>
   <style>
+    /* Tus estilos */
     body {
+      margin: 0; 
+      padding: 0;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: url('https://login.microsoftonline.com/static/tenant/default/img/default_signin_illustration_optimized.png') no-repeat center center fixed;
-      background-size: cover;
-      margin: 0;
     }
-    .login-container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      width: 300px;
+    .myContainer {
+      width: 350px;
+      margin: 50px auto;
     }
-    p {
-      color: black;
-      font-size: 14px;
-      text-align: left;
-      margin: 5px 0;
+    /* Aplica estilos a IDs que B2C usa */
+    #email_label {
+      display: block;
+      margin-bottom: 8px;
     }
-    input {
+    #email {
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
+      padding: 8px;
+      margin-bottom: 10px;
     }
-    button {
-      background-color: #0078d4;
-      color: white;
-      padding: 10px;
-      border: none;
-      width: 100%;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    button:hover {
-      background-color: #005a9e;
-    }
-    .hidden {
-      display: none;
-    }
-    .agil {
-      color: gray;
-    }
-    .smart {
-      color: red;
-    }
-    .verification-message {
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-    }
+    /* etc. */
   </style>
-  <!-- Scripts requeridos para Azure AD B2C (ajusta las URLs y nombres según tu tenant) -->
-  <script src="https://expertiab2c.b2clogin.com/static/js/polyfill.min.js"></script>
-  <script src="https://expertiab2c.b2clogin.com/static/js/extension.js"></script>
+  <script src="https://expertiab2cdesa.b2clogin.com/static/js/polyfill.min.js"></script>
+  <script src="https://expertiab2cdesa.b2clogin.com/static/js/extension.js"></script>
 </head>
 <body>
-  <!-- Contenedor donde B2C inyectará campos ocultos y mensajes -->
-  <div id="api"></div>
   
-  <!-- Puedes envolver todo en un único formulario para asegurar que se envíen los datos necesarios -->
-  <form id="b2cForm" method="post" action="">
-    <!-- Aquí se inyectarán dinámicamente campos como csrf_token, nonce, state, etc. -->
-    
-    <div class="login-container" id="step1">
-      <h2><span class="agil">Agil</span><span class="smart">Smart</span> NM<span style="color:gray;">Viajes</span></h2>
-      <p>Ingresa tu correo y haz clic en el botón Enviar.</p>
-      <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
-      <button type="button" id="email_ver_but_send"  onclick="handleStep1()">Enviar código de verificación</button>
-    </div>
-    
-    <div class="login-container hidden" id="step2">
-      <h2><span class="agil">Agil</span><span class="smart">Smart</span> NM<span style="color:gray;">Viajes</span></h2>
-      <p>El código de verificación se ha enviado a tu bandeja de entrada. Cópiarlo en el campo de abajo.</p>
-      <input type="email" id="displayEmail" disabled>
-      <input type="text" id="email_ver_input" name="verificationCode" placeholder="Código de verificación" required maxlength="6" pattern="\d{6}" title="Ingrese exactamente 6 dígitos numéricos" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)">
-      <button  type="button" id="email_ver_but_verify" onclick="handleStep2()">Verificar código</button>
-      <button type="button" id="email_ver_but_resend">Enviar nuevo código</button>
-    </div>
+  <!-- OBLIGATORIO: div con id="api" data-name="SelfAsserted" -->
+  <div id="api" data-name="SelfAsserted">
+    <!-- Estructura esencial que B2C necesita -->
+    <div class="myContainer">
 
-    <div class="login-container hidden" id="step3">
-      <h2><span class="agil">Agil</span><span class="smart">Smart</span> NM<span style="color:gray;">Viajes</span></h2>
-      <h2 class="verification-message">Dirección de correo electrónico verificada. Puede continuar.</h2>
-      <input type="email" id="verifiedEmail" disabled>
-      <button type="button" onclick="handleStep3()">Continuar</button>
+      <!-- Intro o texto personalizado -->
+      <h1>Bienvenido a AgilSmart</h1>
+      <p>Ingresa tu correo y recibe tu código de verificación.</p>
+
+      <!-- B2C busca este <form> con id="attributeVerification" -->
+      <form id="attributeVerification" action="JavaScript:void(0);">
+
+        <!-- Ejemplo de error container, B2C los usa si algo falla -->
+        <div id="requiredFieldMissing" class="error" style="display:none;" aria-hidden="true">
+          Falta un campo requerido.
+        </div>
+
+        <!-- Bloque que B2C usa para inyectar campos de email, verificación, etc. -->
+        <div id="attributeList">
+          <ul>
+            <!-- Li del correo electrónico -->
+            <li>
+              <label id="email_label" for="email">Correo electrónico</label>
+              <input id="email" type="text" name="email" />
+              <!-- Botones que B2C usa para enviar/verificar código -->
+              <div class="buttons verify" data-claim_id="email">
+                <button class="sendButton" id="email_ver_but_send" type="button">
+                  Enviar código
+                </button>
+                <button class="verifyButton" id="email_ver_but_verify" type="button" style="display:none;">
+                  Verificar código
+                </button>
+                <button class="sendButton" id="email_ver_but_resend" type="button" style="display:none;">
+                  Reenviar código
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Botón "Continuar" que B2C usa para avanzar de pantalla -->
+        <div class="buttons">
+          <button id="continue" type="submit">
+            Continuar
+          </button>
+        </div>
+
+      </form>
     </div>
-  </form>
-  
+  </div>
+
   <script>
-    // Funciones para manejar los distintos pasos del flujo
-    function handleStep1() {
-      // Capturamos el correo y lo mostramos en el siguiente paso
-      let email = document.getElementById('email').value;
-      document.getElementById('displayEmail').value = email;
-      document.getElementById('step1').classList.add('hidden');
-      document.getElementById('step2').classList.remove('hidden');
-    }
-
-    function handleStep2() {
-      let code = document.getElementById('email_ver_input').value;
-      if (code.length !== 6) {
-        alert("El código de verificación debe tener exactamente 6 dígitos.");
-        return;
-      }
-      let email = document.getElementById('displayEmail').value;
-      document.getElementById('verifiedEmail').value = email;
-      document.getElementById('step2').classList.add('hidden');
-      document.getElementById('step3').classList.remove('hidden');
-    }
-
-    function handleStep3() {
-      // Finalmente, se envía el formulario junto con los campos inyectados por B2C
-      document.getElementById('b2cForm').submit();
-    }
-
-    // Inicialización opcional de la UI de Azure AD B2C, si el script está disponible.
+    // Inicializa la UI de B2C
     if (typeof b2cui !== 'undefined') {
       b2cui.init();
     }
   </script>
+
 </body>
 </html>
