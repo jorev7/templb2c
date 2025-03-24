@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <title>Inicio de Sesión B2C</title>
@@ -24,7 +24,10 @@
       padding: 8px;
       margin-bottom: 10px;
     }
-    /* etc. */
+    /* Oculta el botón Continuar */
+    #continue {
+      display: none !important;
+    }
   </style>
   <script src="https://expertiab2cdesa.b2clogin.com/static/js/polyfill.min.js"></script>
   <script src="https://expertiab2cdesa.b2clogin.com/static/js/extension.js"></script>
@@ -71,7 +74,7 @@
           </ul>
         </div>
 
-        <!-- Botón "Continuar" que B2C usa para avanzar de pantalla -->
+        <!-- Botón "Continuar" (oculto por CSS) -->
         <div class="buttons">
           <button id="continue" type="submit">
             Continuar
@@ -87,6 +90,30 @@
     if (typeof b2cui !== 'undefined') {
       b2cui.init();
     }
+
+    // Script para deshabilitar el botón Continuar y auto-submit al verificar el código
+    document.addEventListener('DOMContentLoaded', function() {
+      // Aseguramos que el botón "Continuar" esté oculto
+      var continueBtn = document.getElementById('continue');
+      if (continueBtn) {
+        continueBtn.style.display = 'none';
+      }
+
+      // Escucha el clic en el botón "Verificar código"
+      var verifyBtn = document.getElementById('email_ver_but_verify');
+      if (verifyBtn) {
+        verifyBtn.addEventListener('click', function() {
+          // Se establece un retardo para permitir que B2C procese la verificación
+          setTimeout(function() {
+            // Se asume que si la verificación fue exitosa, el botón "Verificar" se oculta
+            if (verifyBtn.style.display === 'none') {
+              // Forzamos el submit del formulario, avanzando a la siguiente etapa
+              document.getElementById('attributeVerification').submit();
+            }
+          }, 1500); // Ajusta este tiempo de espera si es necesario
+        });
+      }
+    });
   </script>
 
 </body>
